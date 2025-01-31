@@ -33,8 +33,6 @@ func main(){
   }
 }
 
-
-
 func create_huff_node_tree(huffman_node_arr []huffman_node)huffman_node{
   // so, what needs to be done is that the huffman node array have to be converted to a tree like structure.
   // what i plan to do is, to loop through the array and for each new node that i get after merge the smallest two huffman_nodes
@@ -91,11 +89,12 @@ func encode_into_huffman(fileData string) []huffman_node{
   return huffman_node_arr;
   // now that I have a huffman node for each value, first I will sort the map with respect to the frequency and create a tree
 }
+
 func merge_node(n1* huffman_node,n2* huffman_node) huffman_node{
   return huffman_node{n1.freq+n2.freq,0b00110011,n1,n2}
 }
-func push_and_sort(huff_node_to_insert huffman_node, huffman_node_arr []huffman_node)[]huffman_node{
-  
+
+func push_and_sort(huff_node_to_insert huffman_node, huffman_node_arr []huffman_node)[]huffman_node{  
   var resulting_huff_node_arr []huffman_node
   for index,iter_huff_node := range huffman_node_arr{
     if iter_huff_node.freq>huff_node_to_insert.freq{
@@ -116,5 +115,14 @@ func traverse_root(root_node *huffman_node) *huffman_node{
   traverse_root(root_node.left_node);
   fmt.Printf("Character:%s\nFrequency:%d\n",string(root_node.char_data),root_node.freq)
   return traverse_root(root_node.right_node);
-  return nil;
+}
+
+func generateHuffmanCode(root_node *huffman_node,huffman_node_arr []huffman_node){
+  // for _,_ := range huffman_node_arr{
+  //   // value := tree_search(root_node,node);
+  // }
+}
+func tree_search(root_node *huffman_node,key huffman_node) int{
+  // left to be implmented :)  
+  return 0b000;
 }
