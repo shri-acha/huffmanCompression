@@ -26,13 +26,28 @@ func main(){
     if err !=nil {
       fmt.Fprintf(os.Stderr,"[ERROR]:"+err.Error())
     }
-    resulting_arr := encode_into_huffman(string(fileData)) //now the thing returns the sorted value
-    for _,value := range resulting_arr{
-      fmt.Printf("%v\n",value);
-    }
+    resulting_arr := encode_into_huffman(string(fileData)) //now the thing returns the sorted array of huffman_nodes
+    final_root_huffman_node := create_huff_node_tree(resulting_arr)
+    fmt.Printf("[FINAL-TREE-ROOT]-%v\n",final_root_huffman_node)
+    traverse_root(&final_root_huffman_node);
   }
 }
 
+
+
+func create_huff_node_tree(huffman_node_arr []huffman_node)huffman_node{
+  // so, what needs to be done is that the huffman node array have to be converted to a tree like structure.
+  // what i plan to do is, to loop through the array and for each new node that i get after merge the smallest two huffman_nodes
+  // when pushing i just push and return the new sorted array and keep on doing that until the array is one element wide.
+  // merge_node() function to merge two nodes - helper function
+  // push_and_sort() function to push into the initial array and return the sorted array
+  fmt.Printf("[NON-MERGED-TREE]-%v\n",huffman_node_arr)
+  resulting_huff_node_arr := huffman_node_arr
+  for ;len(resulting_huff_node_arr)!=1; {   
+  resulting_huff_node_arr =  push_and_sort(merge_node(&resulting_huff_node_arr[0],&resulting_huff_node_arr[1]),resulting_huff_node_arr[2:])
+  }
+  return resulting_huff_node_arr[0] 
+}
 
 func encode_into_huffman(fileData string) []huffman_node{
   // "helloworld"
@@ -78,4 +93,28 @@ func encode_into_huffman(fileData string) []huffman_node{
 }
 func merge_node(n1* huffman_node,n2* huffman_node) huffman_node{
   return huffman_node{n1.freq+n2.freq,0b00110011,n1,n2}
+}
+func push_and_sort(huff_node_to_insert huffman_node, huffman_node_arr []huffman_node)[]huffman_node{
+  
+  var resulting_huff_node_arr []huffman_node
+  for index,iter_huff_node := range huffman_node_arr{
+    if iter_huff_node.freq>huff_node_to_insert.freq{
+      resulting_huff_node_arr = append(huffman_node_arr[0:index],huff_node_to_insert )
+      resulting_huff_node_arr = append(resulting_huff_node_arr,huffman_node_arr[index:]...)
+      fmt.Printf("[SHORT-MERGE]-%v\n",huffman_node_arr);
+      return resulting_huff_node_arr;
+    }
+  } 
+      resulting_huff_node_arr = append(huffman_node_arr,huff_node_to_insert)
+      return resulting_huff_node_arr
+}
+
+func traverse_root(root_node *huffman_node) *huffman_node{
+  if root_node == nil {
+    return nil;
+  }
+  traverse_root(root_node.left_node);
+  fmt.Printf("Character:%s\nFrequency:%d\n",string(root_node.char_data),root_node.freq)
+  return traverse_root(root_node.right_node);
+  return nil;
 }
