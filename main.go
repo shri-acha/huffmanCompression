@@ -28,7 +28,7 @@ func main(){
     }
     resulting_arr := encode_into_huffman(string(fileData)) //now the thing returns the sorted array of huffman_nodes
     final_root_huffman_node := create_huff_node_tree(resulting_arr)
-    fmt.Printf("[FINAL-TREE-ROOT]-%v\n",final_root_huffman_node)
+    fmt.Printf("[FINAL-TREE-ROOT]-%v\n[CHILDREN-TREE-LEFT]-%s\n[CHILDREN-TREE-RIGHT]-%s\n",final_root_huffman_node.freq,string(final_root_huffman_node.left_node.char_data),string(final_root_huffman_node.right_node.char_data))
     traverse_root(&final_root_huffman_node);
   }
 }
@@ -97,10 +97,14 @@ func merge_node(n1* huffman_node,n2* huffman_node) huffman_node{
 func push_and_sort(huff_node_to_insert huffman_node, huffman_node_arr []huffman_node)[]huffman_node{  
   var resulting_huff_node_arr []huffman_node
   for index,iter_huff_node := range huffman_node_arr{
-    if iter_huff_node.freq>huff_node_to_insert.freq{
-      resulting_huff_node_arr = append(huffman_node_arr[0:index],huff_node_to_insert )
-      resulting_huff_node_arr = append(resulting_huff_node_arr,huffman_node_arr[index:]...)
-      fmt.Printf("[SHORT-MERGE]-%v\n",huffman_node_arr);
+    if iter_huff_node.freq > huff_node_to_insert.freq{
+      temp := make([]huffman_node,index)
+      copy(temp,huffman_node_arr[:index]) 
+      fmt.Printf("[MERGING]- %v and %v\n",huffman_node_arr,huff_node_to_insert)
+      temp = append(temp,huff_node_to_insert)
+      fmt.Printf("[SHORT-MERGE-RESULT]- %v\n",temp)
+      resulting_huff_node_arr = append(temp,huffman_node_arr[index:]...)
+      fmt.Printf("[FINAL-RESULT]- %v\n",resulting_huff_node_arr)
       return resulting_huff_node_arr;
     }
   } 
