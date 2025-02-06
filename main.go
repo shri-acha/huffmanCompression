@@ -26,10 +26,19 @@ func main(){
     if err !=nil {
       fmt.Fprintf(os.Stderr,"[ERROR]:"+err.Error())
     }
+
     resulting_arr := encode_into_huffman(string(fileData)) //now the thing returns the sorted array of huffman_nodes
+    
     final_root_huffman_node := create_huff_node_tree(resulting_arr)
-    fmt.Printf("[FINAL-TREE-ROOT]-%v\n[CHILDREN-TREE-LEFT]-%s\n[CHILDREN-TREE-RIGHT]-%s\n",final_root_huffman_node.freq,string(final_root_huffman_node.left_node.char_data),string(final_root_huffman_node.right_node.char_data))
+    
     traverse_root(&final_root_huffman_node);
+    fmt.Printf("%v\n",resulting_arr)
+    huffman_code_map := make(map[byte]string)    
+    var huffman_code_string string
+    generateHuffmanCode(&final_root_huffman_node,huffman_code_map,huffman_code_string) // generates the huffman code of each character into huffman_code_map
+    for byte_value,encoded_value := range huffman_code_map{
+      fmt.Printf("Character:%c\tEncoded value:%s\n",byte_value,encoded_value)
+    }
   }
 }
 
@@ -91,7 +100,11 @@ func encode_into_huffman(fileData string) []huffman_node{
 }
 
 func merge_node(n1* huffman_node,n2* huffman_node) huffman_node{
-  return huffman_node{n1.freq+n2.freq,0b00110011,n1,n2}
+  if(n1.freq<n2.freq){
+  return huffman_node{n1.freq+n2.freq,0b11111111,n1,n2}
+}else{
+  return huffman_node{n1.freq+n2.freq,0b11111110,n2,n1}
+  }
 }
 
 func push_and_sort(huff_node_to_insert huffman_node, huffman_node_arr []huffman_node)[]huffman_node{  
@@ -100,11 +113,10 @@ func push_and_sort(huff_node_to_insert huffman_node, huffman_node_arr []huffman_
     if iter_huff_node.freq > huff_node_to_insert.freq{
       temp := make([]huffman_node,index)
       copy(temp,huffman_node_arr[:index]) 
-      fmt.Printf("[MERGING]- %v and %v\n",huffman_node_arr,huff_node_to_insert)
+      // fmt.Printf("[MERGING]- %v and %v\n",huffman_node_arr,huff_node_to_insert)
       temp = append(temp,huff_node_to_insert)
-      fmt.Printf("[SHORT-MERGE-RESULT]- %v\n",temp)
+      // fmt.Printf("[SHORT-MERGE-RESULT]- %v\n",temp)
       resulting_huff_node_arr = append(temp,huffman_node_arr[index:]...)
-      fmt.Printf("[FINAL-RESULT]- %v\n",resulting_huff_node_arr)
       return resulting_huff_node_arr;
     }
   } 
@@ -117,16 +129,16 @@ func traverse_root(root_node *huffman_node) *huffman_node{
     return nil;
   }
   traverse_root(root_node.left_node);
-  fmt.Printf("Character:%s\nFrequency:%d\n",string(root_node.char_data),root_node.freq)
   return traverse_root(root_node.right_node);
 }
 
-func generateHuffmanCode(root_node *huffman_node,huffman_node_arr []huffman_node){
-  // for _,_ := range huffman_node_arr{
-  //   // value := tree_search(root_node,node);
-  // }
-}
-func tree_search(root_node *huffman_node,key huffman_node) int{
-  // left to be implmented :)  
-  return 0b000;
+func generateHuffmanCode(root_node *huffman_node,huffmanCodeMap map[byte]string,huffmanCodeString string){
+  //root_node is the root node of the huffman tree
+  // huffman_node_arr is the array of all characters sorted
+  if(root_node.left_node == nil || root_node.right_node == nil) {
+    huffmanCodeMap[root_node.char_data]= huffmanCodeString;
+    return 
+  }
+  generateHuffmanCode(root_node.left_node,huffmanCodeMap,huffmanCodeString+"0");
+  generateHuffmanCode(root_node.right_node,huffmanCodeMap,huffmanCodeString+"1");
 }
